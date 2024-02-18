@@ -1,0 +1,71 @@
+---
+# Source: victoria-metrics-cluster/templates/vmselect-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: vmselect
+    app.kubernetes.io/name: victoria-metrics-cluster
+    app.kubernetes.io/instance: victoriametrics1
+    helm.sh/chart: victoria-metrics-cluster-0.11.12
+    app.kubernetes.io/managed-by: Helm
+  name: victoriametrics1-victoria-metrics-cluster-vmselect
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: vmselect
+      app.kubernetes.io/name: victoria-metrics-cluster
+      app.kubernetes.io/instance: victoriametrics1
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: vmselect
+        app.kubernetes.io/name: victoria-metrics-cluster
+        app.kubernetes.io/instance: victoriametrics1
+        app.kubernetes.io/managed-by: Helm
+    spec:
+      automountServiceAccountToken: true
+      containers:
+        - name: victoria-metrics-cluster-vmselect
+          image: "victoriametrics/vmselect:v1.97.1-cluster"
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            {}
+          args:
+            - "--cacheDataPath=/cache"
+            - --storageNode=victoriametrics1-victoria-metrics-cluster-vmstorage-0.victoriametrics1-victoria-metrics-cluster-vmstorage.default.svc.cluster.local:8401
+            - --storageNode=victoriametrics1-victoria-metrics-cluster-vmstorage-1.victoriametrics1-victoria-metrics-cluster-vmstorage.default.svc.cluster.local:8401
+            
+            - --envflag.enable=true
+            - --envflag.prefix=VM_
+            - --loggerFormat=json
+          ports:
+            - name: http
+              containerPort: 8481
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - mountPath: /cache
+              name: cache-volume
+            
+          resources:
+      serviceAccountName: victoriametrics1-victoria-metrics-cluster
+      volumes:
+        - name: cache-volume
+          emptyDir: {}

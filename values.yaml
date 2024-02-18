@@ -1,0 +1,5 @@
+
+vmstorage:
+  persistentVolume:
+    storageClass: "mylocalsc1"
+

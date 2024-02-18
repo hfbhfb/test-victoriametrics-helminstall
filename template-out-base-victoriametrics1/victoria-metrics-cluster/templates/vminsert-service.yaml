@@ -1,0 +1,25 @@
+---
+# Source: victoria-metrics-cluster/templates/vminsert-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: vminsert
+    app.kubernetes.io/name: victoria-metrics-cluster
+    app.kubernetes.io/instance: victoriametrics1
+    helm.sh/chart: victoria-metrics-cluster-0.11.12
+    app.kubernetes.io/managed-by: Helm
+  name: victoriametrics1-victoria-metrics-cluster-vminsert
+  namespace: default
+spec:
+  ports:
+    - name: http
+      port: 8480
+      protocol: TCP
+      targetPort: http
+
+  selector:
+    app: vminsert
+    app.kubernetes.io/name: victoria-metrics-cluster
+    app.kubernetes.io/instance: victoriametrics1
+  type: "ClusterIP"

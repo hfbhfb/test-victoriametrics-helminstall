@@ -1,0 +1,17 @@
+---
+# Source: victoria-metrics-cluster/templates/clusterrolebinding.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: victoriametrics1-victoria-metrics-cluster-clusterrolebinding
+  labels:
+    helm.sh/chart: victoria-metrics-cluster-0.11.12
+    app.kubernetes.io/managed-by: Helm
+subjects:
+  - kind: ServiceAccount
+    name: victoriametrics1-victoria-metrics-cluster
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: victoriametrics1-victoria-metrics-cluster-clusterrole
+  apiGroup: rbac.authorization.k8s.io

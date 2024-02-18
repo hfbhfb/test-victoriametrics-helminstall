@@ -1,0 +1,32 @@
+---
+# Source: victoria-metrics-cluster/templates/vmstorage-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: vmstorage
+    app.kubernetes.io/name: victoria-metrics-cluster
+    app.kubernetes.io/instance: victoriametrics1
+    helm.sh/chart: victoria-metrics-cluster-0.11.12
+    app.kubernetes.io/managed-by: Helm
+  name: victoriametrics1-victoria-metrics-cluster-vmstorage
+  namespace: default
+spec:
+  clusterIP: None
+  ports:
+    - port: 8482
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 8401
+      targetPort: vmselect
+      protocol: TCP
+      name: vmselect
+    - port: 8400
+      targetPort: vminsert
+      protocol: TCP
+      name: vminsert
+  selector:
+    app: vmstorage
+    app.kubernetes.io/name: victoria-metrics-cluster
+    app.kubernetes.io/instance: victoriametrics1
